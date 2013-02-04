@@ -3,6 +3,9 @@ package org.onesy.Utills;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Collections {
 
@@ -40,5 +43,29 @@ public class Collections {
 	 */
 	public static <T> BigInteger getMD5AbsBigInteger(T magic) {
 		return byteToBigInteger(calculateMD5(magic)).abs();
+	}
+	/**
+	 * 这个函数严密的和业务相关请慎用
+	 * keyOrVal = true 为取得键，依照target的值对照值
+	 * keyOrVal = false 为取得值，依照target的值对照键
+	 * @param map
+	 * @param keyOrVal
+	 * @param value
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static ArrayList MapToArrayOrcdBool(Map map,boolean keyOrVal,boolean target){
+		ArrayList rtn = new ArrayList();
+		Iterator it = map.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry entry = (Map.Entry)it.next();
+			if(keyOrVal || entry.getValue().equals(target)){
+				rtn.add(entry.getKey());
+			}
+			if(!keyOrVal || entry.getKey().equals(target)){
+				rtn.add(entry.getValue());
+			}
+		}
+		return rtn;
 	}
 }

@@ -1,11 +1,9 @@
 package org.onesy.Module;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
+
+import org.onesy.Utills.FileUtil;
 
 public class CfgList {
 	//配置文件基目录
@@ -49,20 +47,8 @@ public class CfgList {
 		BasePath = System.getProperty("user.home") + java.io.File.separator + ".cmcs";
 		RootDirPath = BasePath + java.io.File.separator + "Root";
 		RootCfg = RootDirPath + java.io.File.separator + "rootcfg.properties";
-		Properties rootCfg = new Properties();
-		try {
-			rootCfg.load(new FileInputStream(new File(RootCfg)));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			okflg = false;
-			e.printStackTrace();
-			return okflg;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			okflg = false;
-			return okflg;
-		}
+		Properties rootcfgProperties = new Properties();
+		okflg = FileUtil.LoadProperty(RootCfg, rootcfgProperties, false);
 		
 		//初始化本地cube
 		
