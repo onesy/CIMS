@@ -1,58 +1,105 @@
 package org.onesy.Module;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Properties;
 
+import org.onesy.Utills.Collections;
 import org.onesy.Utills.FileUtil;
 
 public class CfgList {
-	//配置文件基目录
+	// 配置文件基目录
 	public static String BasePath = null;
-	//根配置文件的目录的路径
+	// 根配置文件的目录的路径
 	public static String RootDirPath = null;
-	//根配置文件的路径
+	// 根配置文件的路径
 	public static String RootCfg = null;
-	//本地cube配置文件目录路径
+	// 本地cube配置文件目录路径
 	public static String LocalCubeDir = null;
-	//本地cube配置文件路径
+	// 本地cube配置文件路径
 	public static String LocalCube = null;
-	//远程cube配置文件目录路径
+	// 远程cube配置文件目录路径
 	public static String RemoteCubeDir = null;
-	//远程cube根配置文件路径
+	// 远程cube根配置文件路径
 	public static String Remotecube = null;
-	//远程cube支配置文件路径
+	// 远程cube支配置文件路径
 	public static ArrayList<String> RmtCfgList = new ArrayList<String>();
-	//plugin根配置文件目录路径
+	// plugin根配置文件目录路径
 	public static String PluginDir = null;
-	//pulgin根配置文件路径
+	// pulgin根配置文件路径
 	public static String Plugin = null;
-	//pugins文件路径集合
+	// pugins文件路径集合
 	public static ArrayList<String> PluginCfgList = new ArrayList<String>();
-	
+	// 存储cube的信息
+	public static HashMap<String, Properties> AllCfg = new HashMap<String, Properties>();
 	/*
-	 * 配置文件加载顺序
-	 * 1.首先确认BasePath，读取根配置文件
-	 * 2.根据根配置文件读取到的
+	 * 配置文件加载顺序 1.首先确认BasePath，读取根配置文件 2.根据根配置文件读取到的初始化其他的根文件目录
 	 */
-	
-	public CfgList(){
-		
+
+	public CfgList() {
+		// 初始化配置文件
+		boolean flg = CfgLoad();
+		if (!flg) {
+			// 初始化错误
+			System.exit(-1);
+		}
 	}
-	
-	public boolean CfgLoad(){
-		
+
+	public boolean CfgLoad() {
+
 		boolean okflg = true;
-		
-		//初始化根配置文件
-		BasePath = System.getProperty("user.home") + java.io.File.separator + ".cmcs";
+		Properties rootCfgCube = null;
+		Properties localCfgCube = null;
+		Properties rmtCfg = null;
+		ArrayList<Properties> rmtCfgCubes = new ArrayList<Properties>();
+		Properties pluginCfgCube = null;
+
+		// 初始化根配置文件
+		BasePath = System.getProperty("user.home") + java.io.File.separator
+				+ ".cmcs";
 		RootDirPath = BasePath + java.io.File.separator + "Root";
 		RootCfg = RootDirPath + java.io.File.separator + "rootcfg.properties";
-		Properties rootcfgProperties = new Properties();
-		okflg = FileUtil.LoadProperty(RootCfg, rootcfgProperties, false);
+		rootCfgCube = FileUtil.LoadProperty(RootCfg, false);
 		
-		//初始化本地cube
+		// 初始化本地cube
+		LocalCube = BasePath + rootCfgCube.getProperty("localcfg");
+		LocalCubeDir = new File(LocalCube).getParent();
+		localCfgCube = FileUtil.LoadProperty(LocalCube,  false);
 		
-		return okflg;
+		// 初始化远程cube
+		Remotecube = BasePath + rootCfgCube.getProperty("remotecfg");
+		RemoteCubeDir = new File(Remotecube).getParent();
+		rmtCfg = FileUtil.LoadProperty(Remotecube, false);
+		ArrayList rmtcubecfg = Collections.MapToArrayOrcdBool(rmtCfg, true, "true");
+		for (Object rmtcube : rmtcubecfg) {
+			Properties rmtProper = new Properties();
+			try {
+				rmtProper.load(new FileInputStream(new File((String)rmtcube)));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				okflg = false;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				okflg = false;
+			}
+			rmtCfgCubes.add(rmtProper);
+		}
+		
+		// 初始化插件配置文件
+		Plugin = BasePath + rootCfgCube.getProperty("plugincfg");
+		PluginDir = new File(Plugin).getParent();
+		pluginCfgCube = FileUtil.LoadProperty(Plugin, false);
+		// 校验是不是所有的过程都是正常的
+		if(BasePath != null && RootDirPath != null && RootCfg != null && localCfgCube != null && okflg)
+			return true;
+		else 
+			return false;
 	}
 
 }

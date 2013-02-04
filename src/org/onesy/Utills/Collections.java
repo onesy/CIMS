@@ -54,7 +54,7 @@ public class Collections {
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static ArrayList MapToArrayOrcdBool(Map map,boolean keyOrVal,boolean target){
+	public static ArrayList MapToArrayOrcdBool(Map map,boolean keyOrVal,String target){
 		ArrayList rtn = new ArrayList();
 		Iterator it = map.entrySet().iterator();
 		while (it.hasNext()) {

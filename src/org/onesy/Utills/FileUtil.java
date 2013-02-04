@@ -7,60 +7,55 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class FileUtil {
-	
+
 	/**
 	 * 第三个参数暂时无效
+	 * 
 	 * @param propertyPath
 	 * @param properties
 	 * @param IsIter
 	 * @return
 	 */
-	public static boolean LoadProperty(String propertyPath,Properties properties,boolean IsIter){
-		boolean okflg = true;
-		if(properties == null){
-			okflg = false;
-			return okflg;
-		}
+	public static Properties LoadProperty(String propertyPath, boolean IsIter) {
+		Properties properties = new Properties();
 		try {
 			properties.load(new FileInputStream(new File(propertyPath)));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			okflg = false;
 			e.printStackTrace();
-			return okflg;
+			return null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			okflg = false;
-			return okflg;
+			return null;
 		}
-		return false;
+		return properties;
 	}
 
-	public static Properties getAsProperties(File file){
+	public static Properties getAsProperties(File file) {
 
 		Properties properties = new Properties();
 
 		try {
-			if(!file.exists()){
+			if (!file.exists()) {
 				return null;
 			}
 			FileInputStream in = new FileInputStream(file);
 			properties.load(in);
-		}catch (IOException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return properties;
 	}
-	
-	public static boolean ExistDir(File file){
-		if(file.exists() && file.isDirectory()){
+
+	public static boolean ExistDir(File file) {
+		if (file.exists() && file.isDirectory()) {
 			return true;
 		}
 		return false;
-		
+
 	}
 
 	/**
