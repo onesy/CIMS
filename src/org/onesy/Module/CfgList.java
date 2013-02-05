@@ -35,7 +35,9 @@ public class CfgList {
 	// pugins文件路径集合
 	public static ArrayList<String> PluginCfgList = new ArrayList<String>();
 	// 存储cube的信息
-	public static HashMap<String, Properties> AllCfg = new HashMap<String, Properties>();
+	@SuppressWarnings("rawtypes")
+	public static HashMap AllCfg = new HashMap();
+
 	/*
 	 * 配置文件加载顺序 1.首先确认BasePath，读取根配置文件 2.根据根配置文件读取到的初始化其他的根文件目录
 	 */
@@ -49,6 +51,7 @@ public class CfgList {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean CfgLoad() {
 
 		boolean okflg = true;
@@ -56,7 +59,7 @@ public class CfgList {
 		Properties localCfgCube = null;
 		Properties rmtCfg = null;
 		ArrayList<Properties> rmtCfgCubes = new ArrayList<Properties>();
-		Properties pluginCfgCube = null;
+		Properties pluginCfg = null;
 
 		// 初始化根配置文件
 		BasePath = System.getProperty("user.home") + java.io.File.separator
@@ -64,42 +67,55 @@ public class CfgList {
 		RootDirPath = BasePath + java.io.File.separator + "Root";
 		RootCfg = RootDirPath + java.io.File.separator + "rootcfg.properties";
 		rootCfgCube = FileUtil.LoadProperty(RootCfg, false);
-		
-		// 初始化本地cube
-		LocalCube = BasePath + rootCfgCube.getProperty("localcfg");
-		LocalCubeDir = new File(LocalCube).getParent();
-		localCfgCube = FileUtil.LoadProperty(LocalCube,  false);
-		
-		// 初始化远程cube
-		Remotecube = BasePath + rootCfgCube.getProperty("remotecfg");
-		RemoteCubeDir = new File(Remotecube).getParent();
-		rmtCfg = FileUtil.LoadProperty(Remotecube, false);
-		ArrayList rmtcubecfg = Collections.MapToArrayOrcdBool(rmtCfg, true, "true");
-		for (Object rmtcube : rmtcubecfg) {
-			Properties rmtProper = new Properties();
-			try {
-				rmtProper.load(new FileInputStream(new File((String)rmtcube)));
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				okflg = false;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				okflg = false;
-			}
-			rmtCfgCubes.add(rmtProper);
-		}
-		
+
 		// 初始化插件配置文件
 		Plugin = BasePath + rootCfgCube.getProperty("plugincfg");
 		PluginDir = new File(Plugin).getParent();
-		pluginCfgCube = FileUtil.LoadProperty(Plugin, false);
-		// 校验是不是所有的过程都是正常的
-		if(BasePath != null && RootDirPath != null && RootCfg != null && localCfgCube != null && okflg)
+		pluginCfg = FileUtil.LoadProperty(Plugin, false);
+
+		// 初始化本地cube
+		LocalCube = BasePath + rootCfgCube.getProperty("localcfg");
+		LocalCubeDir = new File(LocalCube).getParent();
+		localCfgCube = FileUtil.LoadProperty(LocalCube, false);
+		if (pluginCfg.get("single").equals("true")) {
 			return true;
-		else 
-			return false;
+		} else {
+			// 初始化远程cube
+			Remotecube = BasePath + rootCfgCube.getProperty("remotecfg");
+			RemoteCubeDir = new File(Remotecube).getParent();
+			rmtCfg = FileUtil.LoadProperty(Remotecube, false);
+			@SuppressWarnings("rawtypes")
+			ArrayList rmtcubecfg = Collections.MapToArrayOrcdBool(rmtCfg, true,
+					"true");
+			for (Object rmtcube : rmtcubecfg) {
+				Properties rmtProper = new Properties();
+				try {
+					rmtProper.load(new FileInputStream(new File(
+							(String) rmtcube)));
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					okflg = false;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					okflg = false;
+				}
+				rmtCfgCubes.add(rmtProper);
+			}
+
+			AllCfg.put("pluginCfg", pluginCfg);
+			AllCfg.put("rmtCfgCubes", rmtCfgCubes);
+			AllCfg.put("rootCfgCube", rootCfgCube);
+			AllCfg.put("localCfgCube", localCfgCube);
+
+			// 校验是不是所有的过程都是正常的
+			if (BasePath != null && RootDirPath != null && RootCfg != null
+					&& localCfgCube != null && okflg)
+				return true;
+			else
+				return false;
+		}
 	}
 
 }

@@ -4,8 +4,10 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 
 public class Collections {
 
@@ -67,5 +69,16 @@ public class Collections {
 			}
 		}
 		return rtn;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public static HashMap<String ,String > PropertyToHashMap(Properties properties){
+		HashMap<String, String> hashmap = new HashMap<String, String>();
+		Iterator iter  = properties.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry entry = (Map.Entry)iter.next();
+			hashmap.put((String)entry.getKey() , (String)entry.getValue());
+		}
+		return hashmap;
 	}
 }
