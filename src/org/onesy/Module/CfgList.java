@@ -64,24 +64,34 @@ public class CfgList {
 		// 初始化根配置文件
 		BasePath = System.getProperty("user.home") + java.io.File.separator
 				+ ".cmcs";
-		RootDirPath = BasePath + java.io.File.separator + "Root";
+		RootDirPath = BasePath + java.io.File.separator + "root";
 		RootCfg = RootDirPath + java.io.File.separator + "rootcfg.properties";
 		rootCfgCube = FileUtil.LoadProperty(RootCfg, false);
 
 		// 初始化插件配置文件
-		Plugin = BasePath + rootCfgCube.getProperty("plugincfg");
+		Plugin = BasePath + File.separator
+				+ rootCfgCube.getProperty("plugincfg");
 		PluginDir = new File(Plugin).getParent();
 		pluginCfg = FileUtil.LoadProperty(Plugin, false);
 
 		// 初始化本地cube
-		LocalCube = BasePath + rootCfgCube.getProperty("localcfg");
+		LocalCube = BasePath + File.separator
+				+ rootCfgCube.getProperty("localcfg");
 		LocalCubeDir = new File(LocalCube).getParent();
 		localCfgCube = FileUtil.LoadProperty(LocalCube, false);
 		if (pluginCfg.get("single").equals("true")) {
+			AllCfg.put("pluginCfg", pluginCfg);
+			AllCfg.put("rootCfgCube", rootCfgCube);
+			AllCfg.put("localCfgCube", localCfgCube);
 			return true;
 		} else {
+			/**
+			 * this block of code contain some deadly error!
+			 * on data struct
+			 */
 			// 初始化远程cube
-			Remotecube = BasePath + rootCfgCube.getProperty("remotecfg");
+			Remotecube = BasePath + File.separator
+					+ rootCfgCube.getProperty("remotecfg");
 			RemoteCubeDir = new File(Remotecube).getParent();
 			rmtCfg = FileUtil.LoadProperty(Remotecube, false);
 			@SuppressWarnings("rawtypes")
@@ -90,8 +100,8 @@ public class CfgList {
 			for (Object rmtcube : rmtcubecfg) {
 				Properties rmtProper = new Properties();
 				try {
-					rmtProper.load(new FileInputStream(new File(
-							(String) rmtcube)));
+					rmtProper.load(new FileInputStream(new File(BasePath
+							+ File.separator + (String) rmtcube)));
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

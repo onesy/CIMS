@@ -1,5 +1,6 @@
 package org.onesy.Utills;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,14 +29,22 @@ public class GVL {
 	 * common cfg
 	 */
 	private static HashMap<String, String> commonCfg = null;
+	
+	public String getFDefault(String key){
+		return defaultCfg.get(key);
+	}
+	
+	public String getFCommon(String key){
+		return commonCfg.get(key);
+	}
 
 	private GVL() {
 		Properties PluginCfg = FileUtil.LoadProperty(CfgList.Plugin, false);
 		defaultCfg = Collections
-				.PropertyToHashMap(FileUtil.LoadProperty(CfgList.BasePath
-						+ PluginCfg.getProperty("defaultPath"), false));
+				.PropertyToHashMap(FileUtil.LoadProperty(CfgList.BasePath 
+						+ File.separator + PluginCfg.getProperty("defaultPath"), false));
 		commonCfg = Collections.PropertyToHashMap(FileUtil.LoadProperty(
-				CfgList.BasePath + PluginCfg.getProperty("commonPath"), false));
+				CfgList.BasePath + File.separator + PluginCfg.getProperty("commonPath"), false));
 	}
 
 	public synchronized static GVL getInstance() {
